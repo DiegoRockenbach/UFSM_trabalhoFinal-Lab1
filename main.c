@@ -13,6 +13,19 @@ struct casa {
 };
 
 
+void limpaSelectedTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]){
+
+	int i, j;
+
+	for (i = 0; i < 6; i++){
+		for (j = 0; j < 6; j++){
+			tabuleiro[i][j].isPossibleMove = false;
+			tabuleiro[i][j].isSelected = false;
+		}
+	}
+
+}
+
 void checaPossibleMoves(size_t x, size_t y, struct casa tabuleiro[x][y], int iSelected, int jSelected){
 	
 	if (iSelected == 0 && jSelected == 0){
@@ -220,9 +233,9 @@ void inicializaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]) {
 
 int main() {
 
-	int i, j, vez = 1;
+	int i, j, iSelected, jSelected, vez = 1;
 	float x, y;
-	bool isOnMenu = true, isOnPVP = false;
+	bool isOnMenu = true, isOnPVP = false, isWaitingForMove = false;
 
 	struct casa tabuleiro[6][6];
 
@@ -280,11 +293,35 @@ int main() {
 				if (isOnPVP == true){
 					for (i = 0; i < 6; i++){
 						for (j = 0; j < 6; j++){
+							if (isWaitingForMove == true){
+								if (((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)) && (tabuleiro[i][j].isPossibleMove == true)){
+									tabuleiro[i][j].player = vez;
+
+									tabuleiro[iSelected][jSelected].player = 0;
+
+									event.mouse.x = 0;
+									event.mouse.y = 0;
+									limpaSelectedTabuleiro(6, 6, tabuleiro);
+									desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P2, peca_P2_Selected, dot_isPossibleMove);
+									isWaitingForMove = false;
+								}
+								else if (((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)) && (tabuleiro[i][j].isPossibleMove == false)) {
+									event.mouse.x = 0;
+									event.mouse.y = 0;
+									limpaSelectedTabuleiro(6, 6, tabuleiro);
+									desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P2, peca_P2_Selected, dot_isPossibleMove);
+									isWaitingForMove = false;
+								}
+							}
+
 							if (tabuleiro[i][j].player != 0){
 								if (tabuleiro[i][j].player == vez){
 									if ((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)){
 										tabuleiro[i][j].isSelected = true;
+										iSelected = i;
+										jSelected = j;
 										checaPossibleMoves(6, 6, tabuleiro, i, j);
+										isWaitingForMove = true;
 									}
 								}
 							}

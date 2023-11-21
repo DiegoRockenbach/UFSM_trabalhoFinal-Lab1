@@ -4,13 +4,206 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
 
-struct casa {
-	float	posX;
-	float posY;
-	int player;				// 0 = casa vazia / 1 = player1 / 2 = player2 / 3 = computador
-	bool isPossibleMove;
-	bool isSelected;
-};
+#include "include/header/func.h"
+
+
+bool checaAtaqueEsquerda(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int jSelected, int flagPodeComer){
+
+	int j;
+
+	printf("\nentrou checaAtaqueEsquerda\n");
+
+	for (j = jSelected-1; j >= 0; j--){
+		if (tabuleiro[iSelected][j].player == vez){
+			return false;
+		}
+		else if (tabuleiro[iSelected][j].player != 0 && tabuleiro[iSelected][j].player != vez && flagPodeComer == true){
+			return true;
+		}
+	}
+
+	if (iSelected == 1){
+		iSelected = 0;
+		jSelected = 1;
+
+		flagPodeComer = true;
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (iSelected == 2){
+		iSelected = 0;
+		jSelected = 2;
+
+		flagPodeComer = true;
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (iSelected == 3){
+		iSelected = 5;
+		jSelected = 2;
+
+		flagPodeComer = true;
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (iSelected == 4){
+		iSelected = 5;
+		jSelected = 1;
+
+		flagPodeComer = true;
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else {
+		return false;
+	}
+
+}
+
+bool checaAtaqueDireita(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int jSelected, int flagPodeComer){
+
+	int j;
+
+		printf("\nentrou checaAtaqueDireita\n");
+
+	for (j = jSelected+1; j < 6; j++){
+		if (tabuleiro[iSelected][j].player == vez){
+			return false;
+		}
+		else if (tabuleiro[iSelected][j].player != 0 && tabuleiro[iSelected][j].player != vez && flagPodeComer == true){
+			return true;
+		}
+	}
+
+	if (iSelected == 1){
+		iSelected = 0;
+		jSelected = 4;
+
+		flagPodeComer = true;
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (iSelected == 2){
+		iSelected = 0;
+		jSelected = 3;
+
+		flagPodeComer = true;
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (iSelected == 3){
+		iSelected = 5;
+		jSelected = 3;
+
+		flagPodeComer = true;
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (iSelected == 4){
+		iSelected = 5;
+		jSelected = 4;
+
+		flagPodeComer = true;
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else {
+		return false;
+	}
+
+}
+
+bool checaAtaqueCima(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int jSelected, int flagPodeComer){
+
+	int i;
+
+	printf("\nentrou checaAtaqueCima\n");
+
+	for (i = iSelected-1; i >= 0; i--){
+		if (tabuleiro[i][jSelected].player == vez){
+			return false;
+		}
+		else if (tabuleiro[i][jSelected].player != 0 && tabuleiro[i][jSelected].player != vez && flagPodeComer == true){
+			return true;
+		}
+	}
+
+	if (jSelected == 1){
+		iSelected = 1;
+		jSelected = 0;
+
+		flagPodeComer = true;
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (jSelected == 2){
+		iSelected = 2;
+		jSelected = 0;
+
+		flagPodeComer = true;
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (jSelected == 3){
+		iSelected = 2;
+		jSelected = 5;
+
+		flagPodeComer = true;
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (jSelected == 4){
+		iSelected = 1;
+		jSelected = 5;
+
+		flagPodeComer = true;
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else {
+		return false;
+	}
+
+}
+
+bool checaAtaqueBaixo(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int jSelected, int flagPodeComer){
+
+	int i;
+
+	printf("\nentrou checaAtaqueBaixo\n");
+
+	for (i = iSelected+1; i < 6; i++){
+		if (tabuleiro[i][jSelected].player == vez){
+			return false;
+		}
+		else if (tabuleiro[i][jSelected].player != 0 && tabuleiro[i][jSelected].player != vez && flagPodeComer == true){
+			return true;
+		}
+	}
+
+	if (jSelected == 1){
+		iSelected = 4;
+		jSelected = 0;
+
+		flagPodeComer = true;
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (jSelected == 2){
+		iSelected = 3;
+		jSelected = 0;
+
+		flagPodeComer = true;
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (jSelected == 3){
+		iSelected = 3;
+		jSelected = 5;
+
+		flagPodeComer = true;
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else if (jSelected == 4){
+		iSelected = 4;
+		jSelected = 5;
+
+		flagPodeComer = true;
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, jSelected, flagPodeComer);
+	}
+	else {
+		return false;
+	}
+
+}
+
+
 
 
 void limpaSelectedTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]){
@@ -261,9 +454,7 @@ int main() {
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_register_event_source(queue, al_get_mouse_event_source());
 
-
 	inicializaTabuleiro(6, 6, tabuleiro);
-
 
 	bool done = false;
 	bool redraw = true;
@@ -295,8 +486,8 @@ int main() {
 						for (j = 0; j < 6; j++){
 							if (isWaitingForMove == true){
 								if (((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)) && (tabuleiro[i][j].isPossibleMove == true)){
+									
 									tabuleiro[i][j].player = vez;
-
 									tabuleiro[iSelected][jSelected].player = 0;
 
 									event.mouse.x = 0;
@@ -314,15 +505,46 @@ int main() {
 								}
 							}
 
-							if (tabuleiro[i][j].player != 0){
-								if (tabuleiro[i][j].player == vez){
-									if ((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)){
-										tabuleiro[i][j].isSelected = true;
-										iSelected = i;
-										jSelected = j;
-										checaPossibleMoves(6, 6, tabuleiro, i, j);
-										isWaitingForMove = true;
+							if (tabuleiro[i][j].player == vez){
+								if ((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)){
+									tabuleiro[i][j].isSelected = true;
+									iSelected = i;
+									jSelected = j;
+									checaPossibleMoves(6, 6, tabuleiro, i, j);
+
+
+
+									if (jSelected == 1 || jSelected == 2 || jSelected == 3 || jSelected == 4){
+										if (checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, jSelected, false) == true){
+											printf("pode comer pra esquerda!\n");
+										}
+										else {
+											printf("nao pode comer pra esquerda!\n");
+										}
+										if (checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, jSelected, false) == true){
+											printf("pode comer pra direita!\n");
+										}
+										else {
+											printf("nao pode comer pra direita!\n");
+										}
+										if (checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, jSelected, false) == true){
+											printf("pode comer pra cima!\n");
+										}
+										else {
+											printf("nao pode comer pra cima!\n");
+										}
+										if (checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, jSelected, false) == true){
+											printf("pode comer pra baixo!\n");
+										}
+										else {
+											printf("nao pode comer pra baixo!\n");
+										}
 									}
+
+
+
+
+									isWaitingForMove = true;
 								}
 							}
 						}

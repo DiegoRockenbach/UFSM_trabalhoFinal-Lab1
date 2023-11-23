@@ -6,13 +6,6 @@
 
 #include "include/header/func.h"
 
-void trocaVelTimer(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_EVENT *event, ALLEGRO_TIMER *timer, double velTimer){
-	
-	al_set_timer_speed(timer, velTimer / 30.0);
-	al_wait_for_event(queue, event);
-
-}
-
 int geraCordRandom(){
 
   int numGerado;
@@ -406,7 +399,7 @@ void checaPossibleMoves(size_t x, size_t y, struct casa tabuleiro[x][y], int iSe
 
 }
 
-void desenhaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y], ALLEGRO_BITMAP *peca_P1, ALLEGRO_BITMAP *peca_P1_Selected, ALLEGRO_BITMAP *peca_P1_Alvo, ALLEGRO_BITMAP *peca_P2,  ALLEGRO_BITMAP *peca_P2_Selected, ALLEGRO_BITMAP *peca_P2_Alvo, ALLEGRO_BITMAP *dot_isPossibleMove) {
+void desenhaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y], ALLEGRO_BITMAP *peca_P1, ALLEGRO_BITMAP *peca_P1_Selected, ALLEGRO_BITMAP *peca_P1_Alvo, ALLEGRO_BITMAP *peca_P2,  ALLEGRO_BITMAP *peca_P2_Selected, ALLEGRO_BITMAP *peca_P2_Alvo, ALLEGRO_BITMAP *dot_isPossibleMove){
 	
 	int i, j;
 
@@ -435,14 +428,14 @@ void desenhaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y], ALLEGRO_B
 				}
 			}
 			else if (tabuleiro[i][j].player == 0 && tabuleiro[i][j].isPossibleMove == true){
-				al_draw_bitmap(dot_isPossibleMove, tabuleiro[i][j].posX, tabuleiro[i][j].posY, 0);	//ta spawnando no x = 230 y = 325 e temq ir pra x = 240 e y = 335
+				al_draw_bitmap(dot_isPossibleMove, tabuleiro[i][j].posX, tabuleiro[i][j].posY, 0);
 			}
 		}
 	}
 	
 }
 
-void inicializaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]) {
+void inicializaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]){
 
 	int i, j;
 
@@ -476,9 +469,9 @@ void inicializaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]) {
 
 int main() {
 
-	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1;
+	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1, contMinTimer = 0;
 	float x, y;
-	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false;
+	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnPause = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false;
 
 	struct casa tabuleiro[6][6];
 
@@ -488,12 +481,16 @@ int main() {
 	al_init();
 	al_init_image_addon();
 	al_install_mouse();
+	al_init_font_addon();
+	al_init_ttf_addon();
+	
 	
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / 30.0);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
 	ALLEGRO_DISPLAY *disp = al_create_display(720, 719);
 	ALLEGRO_BITMAP *menuBG = al_load_bitmap("include/images/menu.png");
 	ALLEGRO_BITMAP *mainBG = al_load_bitmap("include/images/tabuleiro.png");
+	ALLEGRO_BITMAP *pauseBG = al_load_bitmap("include/images/pause.png");
 	ALLEGRO_BITMAP *tutorialBG = al_load_bitmap("include/images/tutorial.png");
 	ALLEGRO_BITMAP *peca_P1 = al_load_bitmap("include/images/peca_preta.png");
 	ALLEGRO_BITMAP *peca_P1_Selected = al_load_bitmap("include/images/peca_preta_Selected.png");
@@ -503,20 +500,16 @@ int main() {
 	ALLEGRO_BITMAP *peca_P2_Alvo = al_load_bitmap("include/images/peca_branca_Alvo.png");
 	ALLEGRO_BITMAP *dot_isPossibleMove = al_load_bitmap("include/images/dotPossibleMove.png");
 	
-	
-	ALLEGRO_FONT *font = al_create_builtin_font();
+	ALLEGRO_FONT *font = al_load_font("include/font/times new roman.ttf", 30, 0);
 
 	al_register_event_source(queue, al_get_display_event_source(disp));
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_register_event_source(queue, al_get_mouse_event_source());
 
-	inicializaTabuleiro(6, 6, tabuleiro);
-
 	bool done = false;
 	bool redraw = true;
 	ALLEGRO_EVENT event;
 
-	al_start_timer(timer);
 	while (true) {
 		al_wait_for_event(queue, &event);
 
@@ -524,12 +517,12 @@ int main() {
 
 			case ALLEGRO_EVENT_TIMER:
 				if (isOnPVC == true && vez == 2){
-					if (isWaitingForMove == true){					
-						printf("\niAux = %d; jAux = %d; tabuleiro[iAux][jAux].player = %d; tabuleiro[iAux][jAux].isPossibleMove = %d\n\n", iAux, jAux, tabuleiro[iAux][jAux].player, tabuleiro[iAux][jAux].isPossibleMove);
+					if (isWaitingForMove == true){			
 						if (tabuleiro[iAux][jAux].player == 1 && tabuleiro[iAux][jAux].isPossibleMove == true){
-							printf("entrou no if de pode comer");
 							tabuleiro[iAux][jAux].player = 2;
 							tabuleiro[iSelected][jSelected].player = 0;
+							printf("\n\nO computador moveu a peça [%d][%d] e comeu a peça da posição [%d][%d]\n", vez, iSelected, jSelected, iAux, jAux);
+
 							limpaSelectedTabuleiro(6, 6, tabuleiro);
 							desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 							isWaitingForMove = false;
@@ -537,43 +530,46 @@ int main() {
 						}
 						else {
 							if (iSelected >= 3 && tabuleiro[iSelected-1][jSelected].isPossibleMove == true){
-								printf("entrou no primeiro if");
 								tabuleiro[iSelected-1][jSelected].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected-1, jSelected);
+
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 								isWaitingForMove = false;
 								vez = flipaVez(vez);
 							}
 							else if (iSelected <= 3 && tabuleiro[iSelected+1][jSelected].isPossibleMove == true){
-								printf("entrou no segundo if");
 								tabuleiro[iSelected+1][jSelected].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected+1, jSelected);
+
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 								isWaitingForMove = false;
 								vez = flipaVez(vez);
 							}
 							else if (jSelected <= 3 && tabuleiro[iSelected][jSelected+1].isPossibleMove == true){
-								printf("entrou no terceiro if");
 								tabuleiro[iSelected][jSelected+1].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected+1);
+
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 								isWaitingForMove = false;
 								vez = flipaVez(vez);
 							}
-							else if (jSelected >= 3 && tabuleiro[iSelected][jSelected-1].isPossibleMove == true){
-								printf("entrou no quarto if");
+							else if (jSelected >= 3 && tabuleiro[iSelected][jSelected-1].isPossibleMove == true){								
 								tabuleiro[iSelected][jSelected-1].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected-1);
+
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 								isWaitingForMove = false;
 								vez = flipaVez(vez);
 							}
 							else {
-								printf("entrou no else");
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								isWaitingForMove = false;
 							}
@@ -606,7 +602,6 @@ int main() {
 										checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
 
 										if (tabuleiro[iAux][jAux].player == 1 && tabuleiro[iAux][jAux].isPossibleMove == true){
-											printf("\n\n[%d][%d]([iAux][jAux]) é um movimento de matar possível pra peça [%d][%d][iSelected][jSelected])\n", iAux, jAux, iSelected, jSelected);
 											tabuleiro[iSelected][jSelected].isSelected = true;
 											tabuleiro[iAux][jAux].isPossibleMove = true;
 											iAux = iAux-1;
@@ -639,19 +634,9 @@ int main() {
 							checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
 							checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
 							isWaitingForMove = true;
-							printf("\niSelected = %d; jSelected = %d;\n", iSelected, jSelected);
 						}
 					}
 				}
-
-
-
-				/// 	DEBUG
-				vez = flipaVez(vez);
-
-
-
-
 				redraw = true;
 				break;
 
@@ -660,10 +645,14 @@ int main() {
 					if (event.mouse.x >= 185 && event.mouse.y >= 35 && event.mouse.x <= 530 && event.mouse.y <= 125){
 						isOnMenu = false;
 						isOnPVP = true;
+						inicializaTabuleiro(6, 6, tabuleiro);
+						al_start_timer(timer);
 					}
 					else if (event.mouse.x >= 185 && event.mouse.y >= 170 && event.mouse.x <= 530 && event.mouse.y <= 265){
 						isOnMenu = false;
 						isOnPVC = true;
+						inicializaTabuleiro(6, 6, tabuleiro);
+						al_start_timer(timer);
 					}
 					else if (event.mouse.x >= 245 && event.mouse.y >= 305 && event.mouse.x <= 475 && event.mouse.y <= 405){
 						isOnMenu = false;
@@ -677,20 +666,21 @@ int main() {
 					else if (event.mouse.x >= 245 && event.mouse.y >= 585 && event.mouse.x <= 475 && event.mouse.y <= 685){
 						isOnMenu = false;
 
-							al_destroy_bitmap(menuBG);
-							al_destroy_bitmap(mainBG);
-							al_destroy_bitmap(tutorialBG);
-							al_destroy_bitmap(peca_P1);
-							al_destroy_bitmap(peca_P1_Selected);
-							al_destroy_bitmap(peca_P1_Alvo);
-							al_destroy_bitmap(peca_P2);
-							al_destroy_bitmap(peca_P2_Selected);
-							al_destroy_bitmap(peca_P2_Alvo);
-							al_destroy_bitmap(dot_isPossibleMove);
-							al_destroy_font(font);
-							al_destroy_display(disp);
-							al_destroy_timer(timer);
-							al_destroy_event_queue(queue);
+						al_destroy_bitmap(menuBG);
+						al_destroy_bitmap(mainBG);
+						al_destroy_bitmap(pauseBG);
+						al_destroy_bitmap(tutorialBG);
+						al_destroy_bitmap(peca_P1);
+						al_destroy_bitmap(peca_P1_Selected);
+						al_destroy_bitmap(peca_P1_Alvo);
+						al_destroy_bitmap(peca_P2);
+						al_destroy_bitmap(peca_P2_Selected);
+						al_destroy_bitmap(peca_P2_Alvo);
+						al_destroy_bitmap(dot_isPossibleMove);
+						al_destroy_font(font);
+						al_destroy_display(disp);
+						al_destroy_timer(timer);
+						al_destroy_event_queue(queue);
 
 						return 0;
 					}
@@ -701,9 +691,9 @@ int main() {
 						for (j = 0; j < 6; j++){
 							if (isWaitingForMove == true){
 								if (((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)) && (tabuleiro[i][j].isPossibleMove == true)){
-									
 									tabuleiro[i][j].player = vez;
 									tabuleiro[iSelected][jSelected].player = 0;
+									printf("\n\nO jogador %d moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, i, j);
 
 									event.mouse.x = 0;
 									event.mouse.y = 0;
@@ -741,6 +731,14 @@ int main() {
 							}
 						}
 					}
+
+					if (event.mouse.x >= 490 && event.mouse.x <= 665 && event.mouse.y >= 60 && event.mouse.y <= 130){						
+						al_stop_timer(timer);
+						isWaitingForMove = false;
+						limpaSelectedTabuleiro(6, 6, tabuleiro);
+						isOnPause = true;
+					}
+
 				}
 				if (isOnPVC == true && vez == 1){
 					for (i = 0; i < 6; i++){
@@ -748,9 +746,9 @@ int main() {
 
 							if (isWaitingForMove == true){
 								if (((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)) && (tabuleiro[i][j].isPossibleMove == true)){
-									
 									tabuleiro[i][j].player = vez;
 									tabuleiro[iSelected][jSelected].player = 0;
+									printf("\n\nO jogador %d moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, i, j);
 
 									event.mouse.x = 0;
 									event.mouse.y = 0;
@@ -787,6 +785,13 @@ int main() {
 							}
 						}
 					}
+
+					if (event.mouse.x >= 490 && event.mouse.x <= 665 && event.mouse.y >= 60 && event.mouse.y <= 130){						
+						al_stop_timer(timer);
+						isWaitingForMove = false;
+						limpaSelectedTabuleiro(6, 6, tabuleiro);
+						isOnPause = true;
+					}
 				}
 
 				if (isOnTutorial == true){
@@ -794,6 +799,38 @@ int main() {
 						isOnTutorial = false;
 						isOnMenu = true;
 					}
+				}
+
+				if (isOnPause == true){
+					if(event.mouse.x >= 230 && event.mouse.y >= 130 && event.mouse.x <= 490 && event.mouse.y <= 240){
+						al_resume_timer(timer);
+						isOnPause = false;
+					}
+					else if(event.mouse.x >= 230 && event.mouse.y >= 310 && event.mouse.x <= 490 && event.mouse.y <= 425){
+						
+						al_resume_timer(timer);
+						al_set_timer_count(timer, 0);
+
+						inicializaTabuleiro(6, 6, tabuleiro);
+						limpaSelectedTabuleiro(6, 6, tabuleiro);
+						vez = 1;
+
+						isOnPause = false;
+					}
+					else if(event.mouse.x >= 230 && event.mouse.y >= 495 && event.mouse.x <= 490 && event.mouse.y <= 610){
+						
+						al_resume_timer(timer);
+						al_set_timer_count(timer, 0);
+
+						limpaSelectedTabuleiro(6, 6, tabuleiro);
+						vez = 1;
+
+						isOnPause = false;
+						isOnPVP = false;
+						isOnPVC = false;
+						isOnMenu = true;
+					}
+
 				}
 				
 				redraw = true;
@@ -818,10 +855,22 @@ int main() {
 				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 			}
 			if (isOnPVP == true || isOnPVC == true){
-				al_draw_bitmap(mainBG, 0, 0, 0);
-				desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
+				if (isOnPause == true){
+					al_draw_bitmap(pauseBG, 0, 0, 0);
+				}
+				else {
+					al_draw_bitmap(mainBG, 0, 0, 0);
+					desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
+
+					if (al_get_timer_count(timer)/30 > 60){
+						al_add_timer_count(timer, -1800);
+						contMinTimer++;
+					}
+					al_draw_textf(font, al_map_rgb(0, 0, 0), 343, 597, 0, "%02d:%02d", contMinTimer, al_get_timer_count(timer)/30);
+				}
 
 				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
+
 			}
 			if (isOnTutorial == true){
 				al_draw_bitmap(tutorialBG, 0, 0, 0);
@@ -829,9 +878,7 @@ int main() {
 				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 			}
 
-			
 			al_flip_display();
-
 			redraw = false;
 		}
 	}
@@ -839,6 +886,7 @@ int main() {
 
 	al_destroy_bitmap(menuBG);
 	al_destroy_bitmap(mainBG);
+	al_destroy_bitmap(pauseBG);
 	al_destroy_bitmap(tutorialBG);
 	al_destroy_bitmap(peca_P1);
 	al_destroy_bitmap(peca_P1_Selected);

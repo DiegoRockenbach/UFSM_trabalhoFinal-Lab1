@@ -469,9 +469,9 @@ void inicializaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]){
 
 int main() {
 
-	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1, contMinTimer = 0;
+	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1, contMinTimer = 0, quantDicas1 = 2, quantDicas2 = 2;
 	float x, y;
-	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnPause = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false;
+	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnPause = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false, isOnDica = false;
 
 	struct casa tabuleiro[6][6];
 
@@ -516,12 +516,135 @@ int main() {
 		switch(event.type) {
 
 			case ALLEGRO_EVENT_TIMER:
+
+				if (isOnPVP == true && isOnDica == true){
+					if (isWaitingForMove == true){
+						if (tabuleiro[iAux][jAux].player != vez && tabuleiro[iAux][jAux].player != 0 && tabuleiro[iAux][jAux].isPossibleMove == true){
+							printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iAux, jAux);
+							isOnDica = false;
+							if (vez == 1){
+								quantDicas1--;
+							}
+							else {
+								quantDicas2--;
+							}
+						}
+						else {
+							if (iSelected >= 3 && tabuleiro[iSelected-1][jSelected].isPossibleMove == true){
+								printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected-1, jSelected);
+								isOnDica = false;
+								if (vez == 1){
+									quantDicas1--;
+								}
+								else {
+									quantDicas2--;
+								}
+							}
+							else if (iSelected <= 3 && tabuleiro[iSelected+1][jSelected].isPossibleMove == true){
+								printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected+1, jSelected);
+								isOnDica = false;
+								if (vez == 1){
+									quantDicas1--;
+								}
+								else {
+									quantDicas2--;
+								}
+							}
+							else if (jSelected <= 3 && tabuleiro[iSelected][jSelected+1].isPossibleMove == true){
+								printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected+1);
+								isOnDica = false;
+								if (vez == 1){
+									quantDicas1--;
+								}
+								else {
+									quantDicas2--;
+								}
+							}
+							else if (jSelected >= 3 && tabuleiro[iSelected][jSelected-1].isPossibleMove == true){
+								printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected-1);
+								isOnDica = false;
+								if (vez == 1){
+									quantDicas1--;
+								}
+								else {
+									quantDicas2--;
+								}
+							}
+							else {
+								limpaSelectedTabuleiro(6, 6, tabuleiro);
+								isWaitingForMove = false;
+							}
+						}
+					}
+					else {
+						for (iSelected = 0; iSelected < 6; iSelected++){
+							if (flagBreak == true){
+								break;
+							}
+							for (jSelected = 0; jSelected < 6; jSelected++){
+								if (flagBreak == true){
+									break;
+								}
+								if (tabuleiro[iSelected][jSelected].player != vez){
+									continue;
+								}
+								for (iAux = 0; iAux < 6; iAux++){
+									if (flagBreak == true){
+										break;
+									}
+									for (jAux = 0; jAux < 6; jAux++){
+										iOrig = iSelected;
+										jOrig = jSelected;
+										limpaSelectedTabuleiro(6, 6, tabuleiro);
+										checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+										checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+										checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+										checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+										if (tabuleiro[iAux][jAux].player != vez && tabuleiro[iAux][jAux].player != 0 && tabuleiro[iAux][jAux].isPossibleMove == true){
+											tabuleiro[iSelected][jSelected].isSelected = true;
+											iAux = iAux - 1;
+											jSelected = jSelected - 1;
+											iSelected = iSelected - 1;
+											flagBreak = true;
+											break;
+										}
+									}
+								}
+							}
+						}
+						if (flagBreak == true){
+							isWaitingForMove = true;
+							flagBreak = false;
+						}
+						else{
+							limpaSelectedTabuleiro(6, 6, tabuleiro);
+							iAux = 0;
+							jAux = 0;
+
+							do {
+								iSelected = geraCordRandom();
+								jSelected = geraCordRandom();
+							} while (tabuleiro[iSelected][jSelected].player != vez);
+							tabuleiro[iSelected][jSelected].isSelected = true;
+							iOrig = iSelected;
+							jOrig = jSelected;
+
+							checaPossibleMoves(6, 6, tabuleiro, iSelected, jSelected);
+							checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+							checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+							checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+							checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+							isWaitingForMove = true;
+						}
+					}
+				}
+
 				if (isOnPVC == true && vez == 2){
-					if (isWaitingForMove == true){			
+					if (isWaitingForMove == true){
 						if (tabuleiro[iAux][jAux].player == 1 && tabuleiro[iAux][jAux].isPossibleMove == true){
 							tabuleiro[iAux][jAux].player = 2;
 							tabuleiro[iSelected][jSelected].player = 0;
-							printf("\n\nO computador moveu a peça [%d][%d] e comeu a peça da posição [%d][%d]\n", vez, iSelected, jSelected, iAux, jAux);
+							printf("\n\nO computador moveu a peça [%d][%d] e comeu a peça da posição [%d][%d]\n", iSelected, jSelected, iAux, jAux);
 
 							limpaSelectedTabuleiro(6, 6, tabuleiro);
 							desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
@@ -532,7 +655,7 @@ int main() {
 							if (iSelected >= 3 && tabuleiro[iSelected-1][jSelected].isPossibleMove == true){
 								tabuleiro[iSelected-1][jSelected].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
-								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected-1, jSelected);
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", iSelected, jSelected, iSelected-1, jSelected);
 
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
@@ -542,7 +665,7 @@ int main() {
 							else if (iSelected <= 3 && tabuleiro[iSelected+1][jSelected].isPossibleMove == true){
 								tabuleiro[iSelected+1][jSelected].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
-								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected+1, jSelected);
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", iSelected, jSelected, iSelected+1, jSelected);
 
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
@@ -552,7 +675,7 @@ int main() {
 							else if (jSelected <= 3 && tabuleiro[iSelected][jSelected+1].isPossibleMove == true){
 								tabuleiro[iSelected][jSelected+1].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
-								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected+1);
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", iSelected, jSelected, iSelected, jSelected+1);
 
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
@@ -562,7 +685,7 @@ int main() {
 							else if (jSelected >= 3 && tabuleiro[iSelected][jSelected-1].isPossibleMove == true){								
 								tabuleiro[iSelected][jSelected-1].player = 2;
 								tabuleiro[iSelected][jSelected].player = 0;
-								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected-1);
+								printf("\n\nO computador moveu a peça [%d][%d] para a posição [%d][%d]\n", iSelected, jSelected, iSelected, jSelected-1);
 
 								limpaSelectedTabuleiro(6, 6, tabuleiro);
 								desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
@@ -620,6 +743,9 @@ int main() {
 							flagBreak = false;
 						}
 						else {
+							iAux = 0;
+							jAux = 0;
+
 							do {
 								iSelected = geraCordRandom();
 								jSelected = geraCordRandom();
@@ -731,19 +857,10 @@ int main() {
 							}
 						}
 					}
-
-					if (event.mouse.x >= 490 && event.mouse.x <= 665 && event.mouse.y >= 60 && event.mouse.y <= 130){						
-						al_stop_timer(timer);
-						isWaitingForMove = false;
-						limpaSelectedTabuleiro(6, 6, tabuleiro);
-						isOnPause = true;
-					}
-
 				}
 				if (isOnPVC == true && vez == 1){
 					for (i = 0; i < 6; i++){
 						for (j = 0; j < 6; j++){
-
 							if (isWaitingForMove == true){
 								if (((event.mouse.x >= tabuleiro[i][j].posX) && (event.mouse.x <= tabuleiro[i][j].posX + 30) && (event.mouse.y >= tabuleiro[i][j].posY) && (event.mouse.y <= tabuleiro[i][j].posY + 25)) && (tabuleiro[i][j].isPossibleMove == true)){
 									tabuleiro[i][j].player = vez;
@@ -785,12 +902,25 @@ int main() {
 							}
 						}
 					}
+				}
 
-					if (event.mouse.x >= 490 && event.mouse.x <= 665 && event.mouse.y >= 60 && event.mouse.y <= 130){						
-						al_stop_timer(timer);
-						isWaitingForMove = false;
+				if ((isOnPVP == true || isOnPVC == true) && event.mouse.x >= 490 && event.mouse.x <= 665 && event.mouse.y >= 60 && event.mouse.y <= 130){						
+					al_stop_timer(timer);
+					isWaitingForMove = false;
+					limpaSelectedTabuleiro(6, 6, tabuleiro);
+					isOnPause = true;
+				}
+
+				if ((isOnPVP == true || isOnPVC == true) && event.mouse.x >= 50 && event.mouse.x <= 225 && event.mouse.y >= 60 && event.mouse.y <= 130){
+					if ((vez == 1 && quantDicas1 != 0) || (vez == 2 && quantDicas2 != 0)){
+						event.mouse.x = 0;
+						event.mouse.y = 0;
 						limpaSelectedTabuleiro(6, 6, tabuleiro);
-						isOnPause = true;
+
+						isOnDica = true;
+					}
+					else {
+						printf("\nO jogador %d não pode mais utilizar o recurso dicas nessa partida!\n", vez);
 					}
 				}
 
@@ -811,6 +941,8 @@ int main() {
 						al_resume_timer(timer);
 						al_set_timer_count(timer, 0);
 
+						quantDicas1 = 2;
+						quantDicas2 = 2;
 						inicializaTabuleiro(6, 6, tabuleiro);
 						limpaSelectedTabuleiro(6, 6, tabuleiro);
 						vez = 1;
@@ -822,6 +954,8 @@ int main() {
 						al_resume_timer(timer);
 						al_set_timer_count(timer, 0);
 
+						quantDicas1 = 2;
+						quantDicas2 = 2;
 						limpaSelectedTabuleiro(6, 6, tabuleiro);
 						vez = 1;
 
@@ -862,7 +996,7 @@ int main() {
 					al_draw_bitmap(mainBG, 0, 0, 0);
 					desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 
-					if (al_get_timer_count(timer)/30 > 60){
+					if (al_get_timer_count(timer)/30 > 59){
 						al_add_timer_count(timer, -1800);
 						contMinTimer++;
 					}

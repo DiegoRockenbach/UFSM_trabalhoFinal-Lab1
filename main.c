@@ -6,6 +6,21 @@
 
 #include "include/header/func.h"
 
+bool checaVictory(size_t x, size_t y, struct casa tabuleiro[x][y], int vez){
+
+	int i, j;
+
+	for (i = 0; i < 6; i++){
+		for (j = 0; j < 6; j++){
+			if (tabuleiro[i][j].player != 0 && tabuleiro[i][j].player != vez){
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
 int geraCordRandom(){
 
   int numGerado;
@@ -15,13 +30,19 @@ int geraCordRandom(){
   return numGerado;
 }
 
-bool checaAtaqueEsquerda(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer){
+bool checaAtaqueEsquerda(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer, int contLoop){
 
 	int j;
 
 	for (j = jSelected; j >= 0; j--){
 		if (j == jOrig && iSelected == iOrig){
-			continue;
+			contLoop++;
+			if (contLoop > 2){
+				return false;
+			}
+			else {
+				continue;
+			}
 		}
 		else if (tabuleiro[iSelected][j].player == vez){
 			return false;
@@ -40,28 +61,28 @@ bool checaAtaqueEsquerda(size_t x, size_t y, struct casa tabuleiro[x][y], int ve
 		jSelected = 1;
 
 		flagPodeComer = true;
-		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (iSelected == 2){
 		iSelected = 0;
 		jSelected = 2;
 
 		flagPodeComer = true;
-		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (iSelected == 3){
 		iSelected = 5;
 		jSelected = 2;
 
 		flagPodeComer = true;
-		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (iSelected == 4){
 		iSelected = 5;
 		jSelected = 1;
 
 		flagPodeComer = true;
-		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else {
 		return false;
@@ -69,13 +90,19 @@ bool checaAtaqueEsquerda(size_t x, size_t y, struct casa tabuleiro[x][y], int ve
 
 }
 
-bool checaAtaqueDireita(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer){
+bool checaAtaqueDireita(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer, int contLoop){
 
 	int j;
 
 	for (j = jSelected; j < 6; j++){
 		if (j == jOrig && iSelected == iOrig){
-			continue;
+			contLoop++;
+			if (contLoop > 2){
+				return false;
+			}
+			else {
+				continue;
+			}
 		}
 		else if (tabuleiro[iSelected][j].player == vez){
 			return false;
@@ -94,28 +121,28 @@ bool checaAtaqueDireita(size_t x, size_t y, struct casa tabuleiro[x][y], int vez
 		jSelected = 4;
 
 		flagPodeComer = true;
-		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (iSelected == 2){
 		iSelected = 0;
 		jSelected = 3;
 
 		flagPodeComer = true;
-		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (iSelected == 3){
 		iSelected = 5;
 		jSelected = 3;
 
 		flagPodeComer = true;
-		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (iSelected == 4){
 		iSelected = 5;
 		jSelected = 4;
 
 		flagPodeComer = true;
-		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else {
 		return false;
@@ -123,13 +150,19 @@ bool checaAtaqueDireita(size_t x, size_t y, struct casa tabuleiro[x][y], int vez
 
 }
 
-bool checaAtaqueCima(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer){
+bool checaAtaqueCima(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer, int contLoop){
 
 	int i;
 
 	for (i = iSelected; i >= 0; i--){
 		if (i == iOrig && jSelected == jOrig){
-			continue;
+			contLoop++;
+			if (contLoop > 2){
+				return false;
+			}
+			else {
+				continue;
+			}
 		}
 		else if (tabuleiro[i][jSelected].player == vez){
 			return false;
@@ -148,28 +181,28 @@ bool checaAtaqueCima(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, i
 		jSelected = 0;
 
 		flagPodeComer = true;
-		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (jSelected == 2){
 		iSelected = 2;
 		jSelected = 0;
 
 		flagPodeComer = true;
-		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (jSelected == 3){
 		iSelected = 2;
 		jSelected = 5;
 
 		flagPodeComer = true;
-		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (jSelected == 4){
 		iSelected = 1;
 		jSelected = 5;
 
 		flagPodeComer = true;
-		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else {
 		return false;
@@ -177,13 +210,19 @@ bool checaAtaqueCima(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, i
 
 }
 
-bool checaAtaqueBaixo(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer){
+bool checaAtaqueBaixo(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, int iSelected, int iOrig, int jSelected, int jOrig, int flagPodeComer, int contLoop){
 
 	int i;
 
 	for (i = iSelected; i < 6; i++){
 		if (i == iOrig && jSelected == jOrig){
-			continue;
+			contLoop++;
+			if (contLoop > 2){
+				return false;
+			}
+			else {
+				continue;
+			}
 		}
 		else if (tabuleiro[i][jSelected].player == vez){
 			return false;
@@ -202,28 +241,28 @@ bool checaAtaqueBaixo(size_t x, size_t y, struct casa tabuleiro[x][y], int vez, 
 		jSelected = 0;
 
 		flagPodeComer = true;
-		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (jSelected == 2){
 		iSelected = 3;
 		jSelected = 0;
 
 		flagPodeComer = true;
-		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (jSelected == 3){
 		iSelected = 3;
 		jSelected = 5;
 
 		flagPodeComer = true;
-		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else if (jSelected == 4){
 		iSelected = 4;
 		jSelected = 5;
 
 		flagPodeComer = true;
-		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer);
+		return checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, flagPodeComer, contLoop);
 	}
 	else {
 		return false;
@@ -469,9 +508,9 @@ void inicializaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]){
 
 int main() {
 
-	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1, contMinTimer = 0, quantDicas1 = 2, quantDicas2 = 2;
+	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1, contMinTimer = 0, quantDicas1 = 2, quantDicas2 = 2, countVictory = 0;
 	float x, y;
-	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnPause = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false, isOnDica = false;
+	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnPause = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false, isOnDica = false, isOnVictoryP1 = false, isOnVictoryP2 = false;
 
 	struct casa tabuleiro[6][6];
 
@@ -490,6 +529,10 @@ int main() {
 	ALLEGRO_DISPLAY *disp = al_create_display(720, 719);
 	ALLEGRO_BITMAP *menuBG = al_load_bitmap("include/images/menu.png");
 	ALLEGRO_BITMAP *mainBG = al_load_bitmap("include/images/tabuleiro.png");
+	ALLEGRO_BITMAP *P1Victory1 = al_load_bitmap("include/images/P1Victory1.png");
+	ALLEGRO_BITMAP *P1Victory2 = al_load_bitmap("include/images/P1Victory2.png");
+	ALLEGRO_BITMAP *P2Victory1 = al_load_bitmap("include/images/P2Victory1.png");
+	ALLEGRO_BITMAP *P2Victory2 = al_load_bitmap("include/images/P2Victory2.png");
 	ALLEGRO_BITMAP *pauseBG = al_load_bitmap("include/images/pause.png");
 	ALLEGRO_BITMAP *tutorialBG = al_load_bitmap("include/images/tutorial.png");
 	ALLEGRO_BITMAP *peca_P1 = al_load_bitmap("include/images/peca_preta.png");
@@ -516,6 +559,14 @@ int main() {
 		switch(event.type) {
 
 			case ALLEGRO_EVENT_TIMER:
+			
+				if (isOnVictoryP1 == true || isOnVictoryP2 == true){
+					countVictory++;
+
+					if (countVictory > 30){
+						countVictory = 0;
+					}
+				}
 
 				if (isOnPVP == true && isOnDica == true){
 					if (isWaitingForMove == true){
@@ -596,10 +647,10 @@ int main() {
 										iOrig = iSelected;
 										jOrig = jSelected;
 										limpaSelectedTabuleiro(6, 6, tabuleiro);
-										checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-										checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-										checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-										checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+										checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+										checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+										checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+										checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
 										if (tabuleiro[iAux][jAux].player != vez && tabuleiro[iAux][jAux].player != 0 && tabuleiro[iAux][jAux].isPossibleMove == true){
 											tabuleiro[iSelected][jSelected].isSelected = true;
 											iAux = iAux - 1;
@@ -630,14 +681,73 @@ int main() {
 							jOrig = jSelected;
 
 							checaPossibleMoves(6, 6, tabuleiro, iSelected, jSelected);
-							checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-							checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-							checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-							checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+							checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+							checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+							checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+							checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
 							isWaitingForMove = true;
 						}
 					}
 				}
+
+
+				if (isOnPVC == true && isOnDica == true && vez == 1){
+					if (isWaitingForMove == true){
+						if (iSelected >= 2 && tabuleiro[iSelected-1][jSelected].isPossibleMove == true){
+							printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected-1, jSelected);
+							isOnDica = false;
+							quantDicas1--;
+						}
+						else if (iSelected <= 1 && tabuleiro[iSelected+1][jSelected].isPossibleMove == true){
+							printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected+1, jSelected);
+							isOnDica = false;
+							quantDicas1--;
+						}
+						else if (jSelected <= 1 && tabuleiro[iSelected][jSelected+1].isPossibleMove == true){
+							printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected+1);
+							isOnDica = false;
+							quantDicas1--;
+						}
+						else if (jSelected >= 2 && tabuleiro[iSelected][jSelected-1].isPossibleMove == true){
+							printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected, jSelected-1);
+							isOnDica = false;
+							quantDicas1--;
+						}
+						else if (tabuleiro[iSelected+1][jSelected+1].isPossibleMove == true){
+							printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected+1, jSelected+1);
+							isOnDica = false;
+							quantDicas1--;
+						}
+						else if (tabuleiro[iSelected+1][jSelected-1].isPossibleMove == true){
+							printf("\n\nO jogador %d deveria mover a peça [%d][%d] para a posição [%d][%d]\n", vez, iSelected, jSelected, iSelected+1, jSelected-1);
+							isOnDica = false;
+							quantDicas1--;
+						}
+						else {
+							limpaSelectedTabuleiro(6, 6, tabuleiro);
+							isWaitingForMove = false;
+						}
+					}
+					else {
+						limpaSelectedTabuleiro(6, 6, tabuleiro);
+
+						do {
+							iSelected = geraCordRandom();
+							jSelected = geraCordRandom();
+						} while (tabuleiro[iSelected][jSelected].player != vez);
+						tabuleiro[iSelected][jSelected].isSelected = true;
+						iOrig = iSelected;
+						jOrig = jSelected;
+
+						checaPossibleMoves(6, 6, tabuleiro, iSelected, jSelected);
+						checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+						checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+						checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+						checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+						isWaitingForMove = true;
+					}
+				}
+
 
 				if (isOnPVC == true && vez == 2){
 					if (isWaitingForMove == true){
@@ -645,8 +755,8 @@ int main() {
 							tabuleiro[iAux][jAux].player = 2;
 							tabuleiro[iSelected][jSelected].player = 0;
 							printf("\n\nO computador moveu a peça [%d][%d] e comeu a peça da posição [%d][%d]\n", iSelected, jSelected, iAux, jAux);
-
 							limpaSelectedTabuleiro(6, 6, tabuleiro);
+							isOnVictoryP2 = checaVictory(6, 6, tabuleiro, vez);
 							desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 							isWaitingForMove = false;
 							vez = flipaVez(vez);
@@ -719,10 +829,10 @@ int main() {
 										jOrig = jSelected;
 
 										limpaSelectedTabuleiro(6, 6, tabuleiro);
-										checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-										checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-										checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-										checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+										checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+										checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+										checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+										checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
 
 										if (tabuleiro[iAux][jAux].player == 1 && tabuleiro[iAux][jAux].isPossibleMove == true){
 											tabuleiro[iSelected][jSelected].isSelected = true;
@@ -755,10 +865,10 @@ int main() {
 							iOrig = iSelected;
 							jOrig = jSelected;
 							checaPossibleMoves(6, 6, tabuleiro, iSelected, jSelected);
-							checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-							checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-							checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-							checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+							checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+							checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+							checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+							checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
 							isWaitingForMove = true;
 						}
 					}
@@ -769,22 +879,32 @@ int main() {
 			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 				if (isOnMenu == true){
 					if (event.mouse.x >= 185 && event.mouse.y >= 35 && event.mouse.x <= 530 && event.mouse.y <= 125){
+						event.mouse.x = 0;
+						event.mouse.y = 0;
 						isOnMenu = false;
 						isOnPVP = true;
 						inicializaTabuleiro(6, 6, tabuleiro);
 						al_start_timer(timer);
+						al_resume_timer(timer);
 					}
 					else if (event.mouse.x >= 185 && event.mouse.y >= 170 && event.mouse.x <= 530 && event.mouse.y <= 265){
+						event.mouse.x = 0;
+						event.mouse.y = 0;
 						isOnMenu = false;
 						isOnPVC = true;
 						inicializaTabuleiro(6, 6, tabuleiro);
 						al_start_timer(timer);
+						al_resume_timer(timer);
 					}
 					else if (event.mouse.x >= 245 && event.mouse.y >= 305 && event.mouse.x <= 475 && event.mouse.y <= 405){
+						event.mouse.x = 0;
+						event.mouse.y = 0;
 						isOnMenu = false;
 						isOnTutorial = true;
 					}
 					else if (event.mouse.x >= 245 && event.mouse.y >= 445 && event.mouse.x <= 475 && event.mouse.y <= 545){
+						event.mouse.x = 0;
+						event.mouse.y = 0;
 						/* isOnMenu = false;
 						isOnHistorico = true; */
 						printf("\nHistórico button!\n");
@@ -794,6 +914,10 @@ int main() {
 
 						al_destroy_bitmap(menuBG);
 						al_destroy_bitmap(mainBG);
+						al_destroy_bitmap(P1Victory1);
+						al_destroy_bitmap(P1Victory2);
+						al_destroy_bitmap(P2Victory1);
+						al_destroy_bitmap(P2Victory2);
 						al_destroy_bitmap(pauseBG);
 						al_destroy_bitmap(tutorialBG);
 						al_destroy_bitmap(peca_P1);
@@ -823,7 +947,14 @@ int main() {
 
 									event.mouse.x = 0;
 									event.mouse.y = 0;
+									
 									limpaSelectedTabuleiro(6, 6, tabuleiro);
+									if (vez == 1){
+										isOnVictoryP1 = checaVictory(6, 6, tabuleiro, vez);
+									}
+									else {
+										isOnVictoryP2 = checaVictory(6, 6, tabuleiro, vez);
+									}
 									desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 									isWaitingForMove = false;
 
@@ -846,11 +977,12 @@ int main() {
 									iOrig = i;
 									jSelected = j;
 									jOrig = j;
-									checaPossibleMoves(6, 6, tabuleiro, i, j);
-									checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-									checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-									checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-									checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+
+									checaPossibleMoves(6, 6, tabuleiro, iSelected, jSelected);
+									checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+									checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+									checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+									checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
 
 									isWaitingForMove = true;
 								}
@@ -870,6 +1002,7 @@ int main() {
 									event.mouse.x = 0;
 									event.mouse.y = 0;
 									limpaSelectedTabuleiro(6, 6, tabuleiro);
+									isOnVictoryP1 = checaVictory(6, 6, tabuleiro, vez);
 									desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 									isWaitingForMove = false;
 
@@ -892,10 +1025,10 @@ int main() {
 									jSelected = j;
 									jOrig = j;
 									checaPossibleMoves(6, 6, tabuleiro, i, j);
-									checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-									checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-									checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
-									checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false);
+									checaAtaqueEsquerda(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+									checaAtaqueDireita(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+									checaAtaqueCima(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
+									checaAtaqueBaixo(6, 6, tabuleiro, vez, iSelected, iOrig, jSelected, jOrig, false, 0);
 
 									isWaitingForMove = true;
 								}
@@ -924,6 +1057,27 @@ int main() {
 					}
 				}
 
+				if (isOnVictoryP1 == true || isOnVictoryP2){
+					if(event.mouse.x >= 230 && event.mouse.y >= 540 && event.mouse.x <= 490 && event.mouse.y <= 655){
+						
+						inicializaTabuleiro(6, 6, tabuleiro);
+						limpaSelectedTabuleiro(6, 6, tabuleiro);
+						
+						quantDicas1 = 2;
+						quantDicas2 = 2;
+						vez = 1;
+						al_stop_timer(timer);
+						contMinTimer = 0;
+						al_set_timer_count(timer, 0);
+
+						isOnPVP = false;
+						isOnPVC = false;
+						isOnVictoryP1 = false;
+						isOnVictoryP2 = false;
+						isOnMenu = true;
+					}
+				}
+
 				if (isOnTutorial == true){
 					if(event.mouse.x >= 500 && event.mouse.y >= 650 && event.mouse.x <= 690 && event.mouse.y <= 700){
 						isOnTutorial = false;
@@ -939,6 +1093,7 @@ int main() {
 					else if(event.mouse.x >= 230 && event.mouse.y >= 310 && event.mouse.x <= 490 && event.mouse.y <= 425){
 						
 						al_resume_timer(timer);
+						contMinTimer = 0;
 						al_set_timer_count(timer, 0);
 
 						quantDicas1 = 2;
@@ -951,7 +1106,7 @@ int main() {
 					}
 					else if(event.mouse.x >= 230 && event.mouse.y >= 495 && event.mouse.x <= 490 && event.mouse.y <= 610){
 						
-						al_resume_timer(timer);
+						contMinTimer = 0;
 						al_set_timer_count(timer, 0);
 
 						quantDicas1 = 2;
@@ -964,7 +1119,6 @@ int main() {
 						isOnPVC = false;
 						isOnMenu = true;
 					}
-
 				}
 				
 				redraw = true;
@@ -992,6 +1146,24 @@ int main() {
 				if (isOnPause == true){
 					al_draw_bitmap(pauseBG, 0, 0, 0);
 				}
+
+				else if (isOnVictoryP1 == true){
+					if (countVictory > 15){
+						al_draw_bitmap(P1Victory1, 0, 0, 0);
+					}
+					else {
+						al_draw_bitmap(P1Victory2, 0, 0, 0);
+					}
+				}
+				else if (isOnVictoryP2 == true){
+					if (countVictory > 15){
+						al_draw_bitmap(P2Victory1, 0, 0, 0);
+					}
+					else {
+						al_draw_bitmap(P2Victory2, 0, 0, 0);
+					}
+				}
+
 				else {
 					al_draw_bitmap(mainBG, 0, 0, 0);
 					desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
@@ -1006,6 +1178,7 @@ int main() {
 				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 
 			}
+
 			if (isOnTutorial == true){
 				al_draw_bitmap(tutorialBG, 0, 0, 0);
 
@@ -1020,6 +1193,10 @@ int main() {
 
 	al_destroy_bitmap(menuBG);
 	al_destroy_bitmap(mainBG);
+	al_destroy_bitmap(P1Victory1);
+	al_destroy_bitmap(P1Victory2);
+	al_destroy_bitmap(P2Victory1);
+	al_destroy_bitmap(P2Victory2);
 	al_destroy_bitmap(pauseBG);
 	al_destroy_bitmap(tutorialBG);
 	al_destroy_bitmap(peca_P1);

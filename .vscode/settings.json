@@ -3,6 +3,9 @@
     "*.C": "c",
     "*.c": "c",
     "stdio.h": "c",
-    "func.h": "c"
+    "func.h": "c",
+    "allegro_image.h": "c",
+    "allegro_font.h": "c",
+    "allegro5.h": "c"
   }
 }

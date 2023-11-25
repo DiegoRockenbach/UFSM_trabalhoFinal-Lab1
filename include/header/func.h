@@ -1,13 +1,33 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+struct PVPHistorico {
+	int partidasJogadas;
+  int vitoriasP1;
+  int vitoriasP2;
+  int partidaCurta;
+  int partidaLonga;
+};
+
+struct PVCHistorico {
+	int partidasJogadas;
+  int vitoriasP1;
+  int vitoriasP2;
+  int partidaCurta;
+  int partidaLonga;
+};
+
 struct casa {
 	float	posX;
 	float posY;
-	int player;				// 0 = casa vazia / 1 = player1 / 2 = player2
+	int player;				// 0 = casa vazia / 1 = player1 / 2 = player2 
 	bool isPossibleMove;
 	bool isSelected;
 };
+
+void writeFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC);
+
+void readFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC);
 
 bool checaVictory(size_t x, size_t y, struct casa tabuleiro[x][y], int vez);
 

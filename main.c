@@ -6,6 +6,76 @@
 
 #include "include/header/func.h"
 
+void writeFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC){
+
+  char strTemp[20];
+
+  FILE *fptr;
+  
+  fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/historico.txt","w+");
+	fprintf(fptr, "Player vs Player-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d\n\nPlayer vs Computer-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d", filePVP.partidasJogadas, filePVP.vitoriasP1, filePVP.vitoriasP2, filePVP.partidaCurta, filePVP.partidaLonga, filePVC.partidasJogadas, filePVC.vitoriasP1, filePVC.vitoriasP2, filePVC.partidaCurta, filePVC.partidaLonga);
+  
+  fclose(fptr);
+}
+
+void readFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC){
+
+  char strTemp[20];
+
+  FILE *fptr;
+  
+  fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/historico.txt","r");
+
+  if (fptr == false){
+    fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/historico.txt","w");
+    fprintf(fptr, "Player vs Player-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d\n\nPlayer vs Computer-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d", filePVP.partidasJogadas, filePVP.vitoriasP1, filePVP.vitoriasP2, filePVP.partidaCurta, filePVP.partidaLonga, filePVC.partidasJogadas, filePVC.vitoriasP1, filePVC.vitoriasP2, filePVC.partidaCurta, filePVC.partidaLonga);
+  }
+  else {
+    fseek(fptr, 37, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVP.partidasJogadas = atoi(strTemp);
+
+    fseek(fptr, 67, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVP.vitoriasP1 = atoi(strTemp);
+
+    fseek(fptr, 98, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVP.vitoriasP2 = atoi(strTemp);
+
+    fseek(fptr, 125, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVP.partidaCurta = atoi(strTemp);
+
+    fseek(fptr, 152, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVP.partidaLonga = atoi(strTemp);
+
+
+    fseek(fptr, 200, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVC.partidasJogadas = atoi(strTemp);
+
+    fseek(fptr, 231, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVC.vitoriasP1 = atoi(strTemp);
+
+    fseek(fptr, 262, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVC.vitoriasP2 = atoi(strTemp);
+
+    fseek(fptr, 289, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVC.partidaCurta = atoi(strTemp);
+
+    fseek(fptr, 316, SEEK_SET);
+    fscanf(fptr,"%s", strTemp);
+    filePVC.partidaLonga = atoi(strTemp);
+  }
+  
+  fclose(fptr);
+}
+
 bool checaVictory(size_t x, size_t y, struct casa tabuleiro[x][y], int vez){
 
 	int i, j;
@@ -508,11 +578,27 @@ void inicializaTabuleiro(size_t x, size_t y, struct casa tabuleiro[x][y]){
 
 int main() {
 
-	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1, contMinTimer = 0, quantDicas1 = 2, quantDicas2 = 2, countVictory = 0;
+	int i, j, iAux, jAux, iSelected, iOrig, jSelected, jOrig, vez = 1, contMinTimer = 0, quantDicas1 = 2, quantDicas2 = 2, countVictory = 0, duracaoPartidaSec = 0;
 	float x, y;
-	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnPause = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false, isOnDica = false, isOnVictoryP1 = false, isOnVictoryP2 = false;
+	bool isOnMenu = true, isOnPVP = false, isOnPVC = false, isOnPause = false, isOnHistorico = false, isOnTutorial = false, isWaitingForMove = false, flagBreak = false, isOnDica = false, isOnVictoryP1 = false, isOnVictoryP2 = false;
 
 	struct casa tabuleiro[6][6];
+	struct PVPHistorico filePVP;
+	struct PVCHistorico filePVC;
+
+	filePVP.partidasJogadas = 0;
+  filePVP.vitoriasP1 = 0;
+  filePVP.vitoriasP2 = 0;
+  filePVP.partidaCurta = 99999;
+  filePVP.partidaLonga = 0;
+
+  filePVC.partidasJogadas = 0;
+  filePVC.vitoriasP1 = 0;
+  filePVC.vitoriasP2 = 0;
+  filePVC.partidaCurta = 99999;
+  filePVC.partidaLonga = 0;
+
+	readFileHistorico(filePVP, filePVC);
 
 	time_t seed;
   srand((unsigned) time(&seed));
@@ -533,6 +619,7 @@ int main() {
 	ALLEGRO_BITMAP *P1Victory2 = al_load_bitmap("include/images/P1Victory2.png");
 	ALLEGRO_BITMAP *P2Victory1 = al_load_bitmap("include/images/P2Victory1.png");
 	ALLEGRO_BITMAP *P2Victory2 = al_load_bitmap("include/images/P2Victory2.png");
+	ALLEGRO_BITMAP *historicoBG = al_load_bitmap("include/images/historico.png");
 	ALLEGRO_BITMAP *pauseBG = al_load_bitmap("include/images/pause.png");
 	ALLEGRO_BITMAP *tutorialBG = al_load_bitmap("include/images/tutorial.png");
 	ALLEGRO_BITMAP *peca_P1 = al_load_bitmap("include/images/peca_preta.png");
@@ -757,6 +844,20 @@ int main() {
 							printf("\n\nO computador moveu a peça [%d][%d] e comeu a peça da posição [%d][%d]\n", iSelected, jSelected, iAux, jAux);
 							limpaSelectedTabuleiro(6, 6, tabuleiro);
 							isOnVictoryP2 = checaVictory(6, 6, tabuleiro, vez);
+							if (isOnVictoryP2 == true){
+								duracaoPartidaSec = al_get_timer_count(timer)/30;
+								if (duracaoPartidaSec < filePVC.partidaCurta){
+									filePVC.partidaCurta = duracaoPartidaSec;
+								}
+								if (duracaoPartidaSec > filePVC.partidaLonga){
+									filePVC.partidaLonga = duracaoPartidaSec;
+								}
+
+								filePVC.partidasJogadas++;
+								filePVC.vitoriasP2++;
+
+								writeFileHistorico(filePVP, filePVC);
+							}
 							desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 							isWaitingForMove = false;
 							vez = flipaVez(vez);
@@ -905,9 +1006,8 @@ int main() {
 					else if (event.mouse.x >= 245 && event.mouse.y >= 445 && event.mouse.x <= 475 && event.mouse.y <= 545){
 						event.mouse.x = 0;
 						event.mouse.y = 0;
-						/* isOnMenu = false;
-						isOnHistorico = true; */
-						printf("\nHistórico button!\n");
+						isOnMenu = false;
+						isOnHistorico = true;
 					}
 					else if (event.mouse.x >= 245 && event.mouse.y >= 585 && event.mouse.x <= 475 && event.mouse.y <= 685){
 						isOnMenu = false;
@@ -918,6 +1018,7 @@ int main() {
 						al_destroy_bitmap(P1Victory2);
 						al_destroy_bitmap(P2Victory1);
 						al_destroy_bitmap(P2Victory2);
+						al_destroy_bitmap(historicoBG);
 						al_destroy_bitmap(pauseBG);
 						al_destroy_bitmap(tutorialBG);
 						al_destroy_bitmap(peca_P1);
@@ -951,9 +1052,37 @@ int main() {
 									limpaSelectedTabuleiro(6, 6, tabuleiro);
 									if (vez == 1){
 										isOnVictoryP1 = checaVictory(6, 6, tabuleiro, vez);
+										if (isOnVictoryP1 == true){
+											duracaoPartidaSec = al_get_timer_count(timer)/30;
+											if (duracaoPartidaSec < filePVP.partidaCurta){
+												filePVP.partidaCurta = duracaoPartidaSec;
+											}
+											if (duracaoPartidaSec > filePVP.partidaLonga){
+												filePVP.partidaLonga = duracaoPartidaSec;
+											}
+
+											filePVP.partidasJogadas++;
+											filePVP.vitoriasP1++;
+
+											writeFileHistorico(filePVP, filePVC);
+										}
 									}
 									else {
 										isOnVictoryP2 = checaVictory(6, 6, tabuleiro, vez);
+										if (isOnVictoryP2 == true){
+											duracaoPartidaSec = al_get_timer_count(timer)/30;
+											if (duracaoPartidaSec < filePVP.partidaCurta){
+												filePVP.partidaCurta = duracaoPartidaSec;
+											}
+											if (duracaoPartidaSec > filePVP.partidaLonga){
+												filePVP.partidaLonga = duracaoPartidaSec;
+											}
+
+											filePVP.partidasJogadas++;
+											filePVP.vitoriasP2++;
+
+											writeFileHistorico(filePVP, filePVC);
+										}
 									}
 									desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 									isWaitingForMove = false;
@@ -1003,6 +1132,20 @@ int main() {
 									event.mouse.y = 0;
 									limpaSelectedTabuleiro(6, 6, tabuleiro);
 									isOnVictoryP1 = checaVictory(6, 6, tabuleiro, vez);
+									if (isOnVictoryP1 == true){
+										duracaoPartidaSec = al_get_timer_count(timer)/30;
+										if (duracaoPartidaSec < filePVC.partidaCurta){
+											filePVC.partidaCurta = duracaoPartidaSec;
+										}
+										if (duracaoPartidaSec > filePVC.partidaLonga){
+											filePVC.partidaLonga = duracaoPartidaSec;
+										}
+
+										filePVC.partidasJogadas++;
+										filePVC.vitoriasP1++;
+
+										writeFileHistorico(filePVP, filePVC);
+									}
 									desenhaTabuleiro(6, 6, tabuleiro, peca_P1, peca_P1_Selected, peca_P1_Alvo, peca_P2, peca_P2_Selected, peca_P2_Alvo, dot_isPossibleMove);
 									isWaitingForMove = false;
 
@@ -1057,7 +1200,7 @@ int main() {
 					}
 				}
 
-				if (isOnVictoryP1 == true || isOnVictoryP2){
+				if (isOnVictoryP1 == true || isOnVictoryP2 == true){
 					if(event.mouse.x >= 230 && event.mouse.y >= 540 && event.mouse.x <= 490 && event.mouse.y <= 655){
 						
 						inicializaTabuleiro(6, 6, tabuleiro);
@@ -1081,6 +1224,13 @@ int main() {
 				if (isOnTutorial == true){
 					if(event.mouse.x >= 500 && event.mouse.y >= 650 && event.mouse.x <= 690 && event.mouse.y <= 700){
 						isOnTutorial = false;
+						isOnMenu = true;
+					}
+				}
+
+				if (isOnHistorico == true){
+					if(event.mouse.x >= 270 && event.mouse.y >= 325 && event.mouse.x <= 450 && event.mouse.y <= 385){
+						isOnHistorico = false;
 						isOnMenu = true;
 					}
 				}
@@ -1185,6 +1335,24 @@ int main() {
 				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 			}
 
+			if (isOnHistorico == true){
+				al_draw_bitmap(historicoBG, 0, 0, 0);
+
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 305, 140, 0, "%d", filePVP.partidasJogadas);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 275, 197, 0, "%d", filePVP.vitoriasP1);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 275, 259, 0, "%d", filePVP.vitoriasP2);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 465, 185, 0, "%d segundos", filePVP.partidaCurta);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 465, 270, 0, "%d segundos", filePVP.partidaLonga);
+
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 305, 520, 0, "%d", filePVC.partidasJogadas);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 275, 577, 0, "%d", filePVC.vitoriasP1);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 275, 639, 0, "%d", filePVC.vitoriasP2);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 465, 565, 0, "%d segundos", filePVC.partidaCurta);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), 465, 650, 0, "%d segundos", filePVC.partidaLonga);
+
+				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
+			}
+
 			al_flip_display();
 			redraw = false;
 		}
@@ -1197,6 +1365,7 @@ int main() {
 	al_destroy_bitmap(P1Victory2);
 	al_destroy_bitmap(P2Victory1);
 	al_destroy_bitmap(P2Victory2);
+	al_destroy_bitmap(historicoBG);
 	al_destroy_bitmap(pauseBG);
 	al_destroy_bitmap(tutorialBG);
 	al_destroy_bitmap(peca_P1);

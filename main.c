@@ -921,6 +921,7 @@ int main() {
 							limpaSelectedTabuleiro(6, 6, tabuleiro);
 							isOnVictoryP2 = checaVictory(6, 6, tabuleiro, vez);
 							if (isOnVictoryP2 == true){
+								isOnPVC = false;
 								duracaoPartidaSec = al_get_timer_count(timer)/30;
 								if (duracaoPartidaSec < filePVC.partidaCurta){
 									filePVC.partidaCurta = duracaoPartidaSec;
@@ -1131,6 +1132,7 @@ int main() {
 									if (vez == 1){
 										isOnVictoryP1 = checaVictory(6, 6, tabuleiro, vez);
 										if (isOnVictoryP1 == true){
+											isOnPVP = false;
 											duracaoPartidaSec = al_get_timer_count(timer)/30;
 											if (duracaoPartidaSec < filePVP.partidaCurta){
 												filePVP.partidaCurta = duracaoPartidaSec;
@@ -1148,6 +1150,7 @@ int main() {
 									else {
 										isOnVictoryP2 = checaVictory(6, 6, tabuleiro, vez);
 										if (isOnVictoryP2 == true){
+											isOnPVP = false;
 											duracaoPartidaSec = al_get_timer_count(timer)/30;
 											if (duracaoPartidaSec < filePVP.partidaCurta){
 												filePVP.partidaCurta = duracaoPartidaSec;
@@ -1211,6 +1214,7 @@ int main() {
 									limpaSelectedTabuleiro(6, 6, tabuleiro);
 									isOnVictoryP1 = checaVictory(6, 6, tabuleiro, vez);
 									if (isOnVictoryP1 == true){
+										isOnPVC = false;
 										duracaoPartidaSec = al_get_timer_count(timer)/30;
 										if (duracaoPartidaSec < filePVC.partidaCurta){
 											filePVC.partidaCurta = duracaoPartidaSec;
@@ -1295,8 +1299,6 @@ int main() {
 						contMinTimer = 0;
 						al_set_timer_count(timer, 0);
 
-						isOnPVP = false;
-						isOnPVC = false;
 						isOnVictoryP1 = false;
 						isOnVictoryP2 = false;
 						isOnMenu = true;
@@ -1374,26 +1376,27 @@ int main() {
 
 				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 			}
+
+			if (isOnVictoryP1 == true){
+				if (countVictory > 15){
+					al_draw_bitmap(P1Victory1, 0, 0, 0);
+				}
+				else {
+					al_draw_bitmap(P1Victory2, 0, 0, 0);
+				}
+			}
+			if (isOnVictoryP2 == true){
+				if (countVictory > 15){
+					al_draw_bitmap(P2Victory1, 0, 0, 0);
+				}
+				else {
+					al_draw_bitmap(P2Victory2, 0, 0, 0);
+				}
+			}
+
 			if (isOnPVP == true || isOnPVC == true){
 				if (isOnPause == true){
 					al_draw_bitmap(pauseBG, 0, 0, 0);
-				}
-
-				else if (isOnVictoryP1 == true){
-					if (countVictory > 15){
-						al_draw_bitmap(P1Victory1, 0, 0, 0);
-					}
-					else {
-						al_draw_bitmap(P1Victory2, 0, 0, 0);
-					}
-				}
-				else if (isOnVictoryP2 == true){
-					if (countVictory > 15){
-						al_draw_bitmap(P2Victory1, 0, 0, 0);
-					}
-					else {
-						al_draw_bitmap(P2Victory2, 0, 0, 0);
-					}
 				}
 
 				else {
@@ -1407,14 +1410,10 @@ int main() {
 					al_draw_textf(font, al_map_rgb(0, 0, 0), 343, 597, 0, "%02d:%02d", contMinTimer, al_get_timer_count(timer)/30);
 				}
 
-				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
-
 			}
 
 			if (isOnTutorial == true){
 				al_draw_bitmap(tutorialBG, 0, 0, 0);
-
-				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 			}
 
 			if (isOnHistorico == true){
@@ -1431,8 +1430,6 @@ int main() {
 				al_draw_textf(font, al_map_rgb(0, 0, 0), 275, 639, 0, "%d", filePVC.vitoriasP2);
 				al_draw_textf(font, al_map_rgb(0, 0, 0), 465, 565, 0, "%d segundos", filePVC.partidaCurta);
 				al_draw_textf(font, al_map_rgb(0, 0, 0), 465, 650, 0, "%d segundos", filePVC.partidaLonga);
-
-				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 			}
 
 			al_flip_display();

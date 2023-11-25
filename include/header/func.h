@@ -25,6 +25,10 @@ struct casa {
 	bool isSelected;
 };
 
+bool saveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, int timer);
+
+bool loadSaveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, ALLEGRO_TIMER *timer);
+
 void writeFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC);
 
 void readFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC);

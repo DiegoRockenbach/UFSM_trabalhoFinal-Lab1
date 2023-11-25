@@ -6,9 +6,85 @@
 
 #include "include/header/func.h"
 
-void writeFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC){
+bool saveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, int timer){
+	
+	int i, j;
+	FILE *fptr;
 
-  char strTemp[20];
+	if (isOnPVP == true){
+		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVP.txt","a+");
+	}
+	else {
+		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVC.txt","a+");
+	}
+
+	for (i = 0; i < 6; i++){
+		for (j = 0; j < 6; j++){
+			if (i == 0 && j == 0){
+				fprintf(fptr, "    [%d][%d]{\nposX = %03.2f\nposY = %03.2f\nplayer = %d\n}\n", i, j, tabuleiro[i][j].posX, tabuleiro[i][j].posY, tabuleiro[i][j].player);	
+			}
+			else {
+				fprintf(fptr, "[%d][%d]{\nposX = %03.2f\nposY = %03.2f\nplayer = %d\n}\n", i, j, tabuleiro[i][j].posX, tabuleiro[i][j].posY, tabuleiro[i][j].player);
+			}
+		}
+	}
+
+	fprintf(fptr, "\ntimer: %d segundos", timer);
+
+	fclose(fptr);
+
+}
+
+bool loadSaveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, ALLEGRO_TIMER *timer){
+	
+	int i, j;
+	FILE *fptr;
+	char strTemp[20];
+
+	if (isOnPVP == true){
+		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVP.txt","r");
+	}
+	else {
+		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVC.txt","r");
+	}
+
+	if (fptr == false){
+		return false;
+	}
+
+	for (i = 0; i < 6; i++){
+		for (j = 0; j < 6; j++){
+			fseek(fptr, 20, SEEK_CUR);
+    	fscanf(fptr,"%s", strTemp);
+			tabuleiro[i][j].posX = atof(strTemp);
+
+			fseek(fptr, 8, SEEK_CUR);
+    	fscanf(fptr,"%s", strTemp);
+			tabuleiro[i][j].posY = atof(strTemp);
+
+			fseek(fptr, 10, SEEK_CUR);
+    	fscanf(fptr,"%s", strTemp);
+			tabuleiro[i][j].player = atoi(strTemp);
+
+		}
+	}
+
+	fseek(fptr, 13, SEEK_CUR);
+  fscanf(fptr,"%s", strTemp);
+	al_set_timer_count(timer, atoi(strTemp)*30);
+
+	fclose(fptr);
+
+	if (isOnPVP == true){
+		remove("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVP.txt");
+	}
+	else {
+		remove("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVC.txt");
+	}
+
+}
+
+void writeFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC){
 
   FILE *fptr;
   
@@ -609,7 +685,7 @@ int main() {
 	al_init_font_addon();
 	al_init_ttf_addon();
 	
-	
+
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / 30.0);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
 	ALLEGRO_DISPLAY *disp = al_create_display(720, 719);
@@ -986,6 +1062,7 @@ int main() {
 						isOnPVP = true;
 						inicializaTabuleiro(6, 6, tabuleiro);
 						al_start_timer(timer);
+						loadSaveFile(6, 6, tabuleiro, isOnPVP, isOnPVC, timer);
 						al_resume_timer(timer);
 					}
 					else if (event.mouse.x >= 185 && event.mouse.y >= 170 && event.mouse.x <= 530 && event.mouse.y <= 265){
@@ -995,6 +1072,7 @@ int main() {
 						isOnPVC = true;
 						inicializaTabuleiro(6, 6, tabuleiro);
 						al_start_timer(timer);
+						loadSaveFile(6, 6, tabuleiro, isOnPVP, isOnPVC, timer);
 						al_resume_timer(timer);
 					}
 					else if (event.mouse.x >= 245 && event.mouse.y >= 305 && event.mouse.x <= 475 && event.mouse.y <= 405){
@@ -1198,6 +1276,10 @@ int main() {
 					else {
 						printf("\nO jogador %d não pode mais utilizar o recurso dicas nessa partida!\n", vez);
 					}
+				}
+
+				if ((isOnPVP == true || isOnPVC == true) && event.mouse.x >= 270 && event.mouse.x <= 445 && event.mouse.y >= 45 && event.mouse.y <= 115){
+					saveFile(6, 6, tabuleiro, isOnPVP, isOnPVC, al_get_timer_count(timer)/30);
 				}
 
 				if (isOnVictoryP1 == true || isOnVictoryP2 == true){

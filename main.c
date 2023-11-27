@@ -1373,8 +1373,6 @@ int main() {
 
 			if (isOnMenu == true){
 				al_draw_bitmap(menuBG, 0, 0, 0);
-
-				al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
 			}
 
 			if (isOnVictoryP1 == true){

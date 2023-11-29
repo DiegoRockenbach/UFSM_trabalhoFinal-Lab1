@@ -1,0 +1,13 @@
+Player vs Player-
+Partidas jogadas: 00000
+Vitórias do jogador 1: 00000
+Vitórias do jogador 2: 00000
+Partida mais curta: 99999
+Partida mais longa: 00000
+
+Player vs Computer-
+Partidas jogadas: 00000
+Vitórias do jogador 1: 00000
+Vitórias do jogador 2: 00000
+Partida mais curta: 99999
+Partida mais longa: 00000

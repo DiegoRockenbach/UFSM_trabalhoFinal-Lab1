@@ -20,12 +20,12 @@ struct PVCHistorico {
 struct casa {
 	float	posX;
 	float posY;
-	int player;				// 0 = casa vazia / 1 = player1 / 2 = player2 
+	int player;
 	bool isPossibleMove;
 	bool isSelected;
 };
 
-bool saveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, int timer);
+void saveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, int timer);
 
 bool loadSaveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, ALLEGRO_TIMER *timer);
 

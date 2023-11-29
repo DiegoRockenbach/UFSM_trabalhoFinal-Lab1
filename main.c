@@ -2,20 +2,21 @@
 #include <stdbool.h>
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 
 #include "include/header/func.h"
 
-bool saveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, int timer){
+void saveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP, bool isOnPVC, int timer){
 	
 	int i, j;
 	FILE *fptr;
 
 	if (isOnPVP == true){
-		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVP.txt","a+");
+		fptr = fopen("include/text/savePVP.txt","a+");
 	}
 	else {
-		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVC.txt","a+");
+		fptr = fopen("include/text/savePVC.txt","a+");
 	}
 
 	for (i = 0; i < 6; i++){
@@ -42,10 +43,10 @@ bool loadSaveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP,
 	char strTemp[20];
 
 	if (isOnPVP == true){
-		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVP.txt","r");
+		fptr = fopen("include/text/savePVP.txt","r");
 	}
 	else {
-		fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVC.txt","r");
+		fptr = fopen("include/text/savePVC.txt","r");
 	}
 
 	if (fptr == false){
@@ -76,11 +77,13 @@ bool loadSaveFile(size_t x, size_t y, struct casa tabuleiro[x][y], bool isOnPVP,
 	fclose(fptr);
 
 	if (isOnPVP == true){
-		remove("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVP.txt");
+		remove("include/text/savePVP.txt");
 	}
 	else {
-		remove("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/savePVC.txt");
+		remove("include/text/savePVC.txt");
 	}
+
+	return true;
 
 }
 
@@ -88,7 +91,7 @@ void writeFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC
 
   FILE *fptr;
   
-  fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/historico.txt","w+");
+  fptr = fopen("include/text/historico.txt","w+");
 	fprintf(fptr, "Player vs Player-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d\n\nPlayer vs Computer-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d", filePVP.partidasJogadas, filePVP.vitoriasP1, filePVP.vitoriasP2, filePVP.partidaCurta, filePVP.partidaLonga, filePVC.partidasJogadas, filePVC.vitoriasP1, filePVC.vitoriasP2, filePVC.partidaCurta, filePVC.partidaLonga);
   
   fclose(fptr);
@@ -100,10 +103,10 @@ void readFileHistorico(struct PVPHistorico filePVP, struct PVCHistorico filePVC)
 
   FILE *fptr;
   
-  fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/historico.txt","r");
+  fptr = fopen("include/text/historico.txt","r");
 
   if (fptr == false){
-    fptr = fopen("C:/Users/rdieg/PROGRAMACAO/trabalhoFinal-Lab1/include/text/historico.txt","w");
+    fptr = fopen("include/text/historico.txt","w");
     fprintf(fptr, "Player vs Player-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d\n\nPlayer vs Computer-\nPartidas jogadas: %05d\nVitórias do jogador 1: %05d\nVitórias do jogador 2: %05d\nPartida mais curta: %05d\nPartida mais longa: %05d", filePVP.partidasJogadas, filePVP.vitoriasP1, filePVP.vitoriasP2, filePVP.partidaCurta, filePVP.partidaLonga, filePVC.partidasJogadas, filePVC.vitoriasP1, filePVC.vitoriasP2, filePVC.partidaCurta, filePVC.partidaLonga);
   }
   else {
